@@ -5,7 +5,7 @@ require '../function.php';
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Tabel Harga Booking Trip</title>
+  <title>Pembelian Tiket Open Trip</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
@@ -14,134 +14,145 @@ require '../function.php';
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <style>
     body {
-      background-image: url("../../gambar/rakis.jpg"); /* Replace with your image path */
+      background-image: url("../../gambar/raki.jpg");
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 300vh;
+      min-height: 130vh;
       margin: 0;
       font-family: Arial, sans-serif;
     }
 
     .container {
-      background-color: rgba(255, 255, 255, 0.8);
+      background-color: rgba(255, 255, 255, 0.3);
       padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      text-align: center;
+      box-shadow: 0 4px 10px rgba(250, 117, 0, 0.1);
+      margin-bottom: 30px;
+      width: 80%;
+      max-width: 1000px;
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
     }
 
-    .form-group {
-      margin-bottom: 15px;
+    .table {
+      margin-top: 20px;
     }
 
-    label {
-      display: block;
-      margin-bottom: 5px;
+    th, td {
+      text-align: center;
+      vertical-align: middle;
     }
 
-    input[type="text"],
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
+    .btn {
+      font-size: 0.9rem;
     }
 
-    button[type="submit"],
-    button[type="reset"] {
-      width: 100%;
+    .logout-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       padding: 10px 20px;
-      margin-top: 10px;
+      background-color: #dc3545;
+      color: white;
       border: none;
-      border-radius: 3px;
-      cursor: pointer;
+      border-radius: 5px;
+      text-decoration: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     }
 
-    button[type="submit"] {
-      background-color: #3498db; /* Adjust submit button color */
-      color: white;
-    }
-
-    button[type="reset"] {
-      background-color: #e74c3c; /* Adjust reset button color */
-      color: white;
-    }
-
-    /* Optional styling for form elements */
-    input[type="text"]:focus,
-    input[type="password"]:focus {
-      outline: none;
-      border-color: #3498db; /* Adjust focus border color */
-    }
-
-    .valid-feedback,
-    .invalid-feedback {
-      display: none; /* Hide feedback by default */
+    .logout-btn:hover {
+      background-color:rgb(0, 238, 255);
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2 class="text-center">Tabel Data Open Trip</h2>
-    <table class="table table-striped">
-      <thead class="text-center">
+    <h2>Pembelian Tiket Open Trip</h2>
+    <table class="table table-striped table-bordered">
+      <thead class="thead-dark">
         <tr>
           <th>No</th>
           <th>Tujuan Trip</th>
           <th>Deskripsi</th>
-          <th>Harga Per orang</th>
+          <th>Harga Per Orang</th>
           <th>Kuota</th>
           <th>Action</th>
         </tr>
       </thead>
-      <?php
-      $sql = "SELECT * FROM buku order by idbuku desc";
-      $query = mysqli_query($koneksi, $sql);
-      $no = 0;
-      while ($data = mysqli_fetch_array($query)) {
-        $no++;
-      ?>
-      <tbody class="text-center">
+      <tbody>
+        <?php
+        $sql = "SELECT * FROM buku ORDER BY idbuku DESC";
+        $query = mysqli_query($koneksi, $sql);
+        $no = 0;
+        while ($data = mysqli_fetch_array($query)) {
+            $no++;
+        ?>
         <tr>
           <td><?php echo $no; ?></td>
-          <td><?php echo $data['judulbuku']; ?></td>
-          <td><?php echo $data['deskripsi']; ?></td>
+          <td><?php echo htmlspecialchars($data['judulbuku']); ?></td>
+          <td><?php echo htmlspecialchars($data['deskripsi']); ?></td>
           <td>Rp<?php echo number_format($data['harga'], 0, ',', '.'); ?></td>
           <td><?php echo $data['stok']; ?></td>
           <td>
-            <a href="edit.php?judul=<?php echo $data['judulbuku']; ?>" class="btn btn-info">Edit</a>
-            <a href="hapus.php?judul=<?php echo $data['judulbuku']; ?>" 
-            class="btn btn-danger" 
-            onclick="return confirm('Apakah Anda yakin ingin menghapus data?')">Hapus</a>
+            <a href="beli.php?judul=<?php echo urlencode($data['judulbuku']); ?>" class="btn btn-info">Buy</a>
           </td>
         </tr>
+        <?php
+        }
+        ?>
       </tbody>
-      <?php
-      }
-      ?>
     </table>
-    <a class="btn btn-info" href="../index.php">Logout</a>
-    <h4 class="text-center">Tambah Data Open Trip</h4>
-    <form method="post">
-      <div class="form-group">
-        <input type="text" name="judul" placeholder="Tujuan Trip" class="form-control">
-        <input type="text" name="deskripsi" placeholder="Deskripsi" class="form-control">
-        <input type="number" name="harga" placeholder="Harga Per orang" class="form-control">
-        <input type="text" name="stok" placeholder="Kuota" class="form-control">
-        <br>
-        <button type="submit" name="simpan" class="btn btn-primary">Simpan</button>
-        <button type="reset" name="reset" class="btn btn-info">Batal</button>
-      </div>
-    </form>
   </div>
+
+  <div class="container">
+    <h2>Riwayat Pembelian Tiket Open Trip</h2>
+    <table class="table table-striped table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th>No</th>
+          <th>ID Pembelian</th>
+          <th>Kuota</th>
+          <th>Tujuan Trip</th>
+          <th>Deskripsi</th>
+          <th>Harga per Orang</th>
+          <th>Jumlah Booking</th>
+          <th>Total Harga</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $sql = "SELECT * FROM beli ORDER BY idbeli ASC";
+        $query = mysqli_query($koneksi, $sql);
+        $no = 0;
+        while ($data = mysqli_fetch_array($query)) {
+            $no++;
+        ?>
+        <tr>
+          <td><?php echo $no; ?></td>
+          <td><?php echo htmlspecialchars($data['idbeli']); ?></td>
+          <td><?php echo htmlspecialchars($data['idbuku']); ?></td>
+          <td><?php echo htmlspecialchars($data['judulbuku']); ?></td>
+          <td><?php echo htmlspecialchars($data['deskripsi']); ?></td>
+          <td>Rp<?php echo number_format($data['harga'], 0, ',', '.'); ?></td>
+          <td><?php echo $data['jumlah']; ?></td>
+          <td>Rp<?php echo number_format($data['harga'] * $data['jumlah'], 0, ',', '.'); ?></td>
+        </tr>
+        <?php
+        }
+        ?>
+      </tbody>
+    </table>
+  </div>
+
+  <a class="logout-btn" href="../index.php">Logout</a>
 </body>
 </html>
